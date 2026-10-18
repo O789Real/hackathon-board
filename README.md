@@ -7,6 +7,9 @@
 
 ## 跑起来
 
+**线上（已部署）**：https://o789real.github.io/hackathon-board/
+**仓库**：https://github.com/O789Real/hackathon-board
+
 双击 `启动.cmd`（首次会自动装依赖），然后打开 **http://127.0.0.1:5173**
 
 手动命令：
@@ -14,9 +17,20 @@
 ```bash
 node node_modules/vite/bin/vite.js dev      # 开发（热更新）
 node node_modules/vite/bin/vite.js build    # 生产构建到 dist/
+npm run data                                # 刷新赛事数据
 ```
 
 > 这台机器的 node/pnpm 不在 PATH 里，`启动.cmd` 里写死了绝对路径。
+
+### 自动更新
+
+`.github/workflows/deploy.yml` 每天 UTC 00:00（北京时间 08:00）自动：
+
+1. 跑 `scripts/update-events.mjs` 抓 Devpost 在招赛事
+2. 有变化就提交 `src/data/events.ts`
+3. 类型检查 + 构建 + 发布到 GitHub Pages
+
+推 `main` 也会触发同样的构建部署。抓取失败时脚本**不会覆盖旧数据**（抓到少于 5 条就退出）。
 
 ---
 
