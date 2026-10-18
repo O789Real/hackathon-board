@@ -5,3 +5,5 @@ dist/
 .vite/
 _*.png
 preview*.png
+
+hackathon-board-dist.zip
