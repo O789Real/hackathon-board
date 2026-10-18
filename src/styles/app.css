@@ -350,10 +350,20 @@ canvas.wires{display:block;position:absolute;inset:0;pointer-events:none;z-index
 /* 只有 11 个话题时，2.5px 的休眠模糊会把大半话题糊没，
    这里收敛到 1px / 0.62 —— 保留「未点亮」的层次，但读得清 */
 .news-river .river-topic-list button[data-dormant="true"]{
-  filter: blur(1px);
-  opacity: .62;
+  filter: blur(0.4px);
+  opacity: .75;
 }
 .news-river .river-topic-list button[data-dormant="true"]:hover{
   filter: none;
   opacity: 1;
+}
+
+/* 卡片内容默认是 blur(3px)，要等粒子抵达才揭晓 —— 首屏会整片发虚。
+   这里收到 0.6px：仍然是「正在聚焦」的观感，但文字一进来就读得清。
+   已揭晓的卡片保持完全清晰（下面这条优先级更高）。 */
+.news-river .river-cards .river-card-content{
+  filter: blur(0.6px);
+}
+.news-river .river-cards article[data-revealed="true"] .river-card-content{
+  filter: none;
 }

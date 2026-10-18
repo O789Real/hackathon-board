@@ -1158,7 +1158,7 @@ export function NewsRiverFlow({
                 data-river-card={card.id}
                 className={idx === 0 && !isFiltering ? "is-current" : ""}
                 data-revealed={
-                  isFiltering || forceReveal || (idx === 0 ? arrived : cursor >= idx)
+                  isFiltering || forceReveal || (idx === 0 ? arrived : true)
                 }
               >
                 {/* 骨架屏光效（粒子尚未到达前显示） */}
