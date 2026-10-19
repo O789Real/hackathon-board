@@ -195,7 +195,7 @@ export function App() {
             <input
               type="search"
               value={filters.q}
-              placeholder="搜赛事 / 主办 / 话题…"
+              placeholder="搜赛事 / 主办 / 分类…"
               aria-label="搜索"
               onChange={(e) => setFilters({ q: e.target.value })}
             />
@@ -311,7 +311,7 @@ function AddDialog({ onClose, onSubmit }: { onClose: () => void; onSubmit: (rec:
           </div>
           <div className="two">
             <div className="field">
-              <label htmlFor="f-cat">话题</label>
+              <label htmlFor="f-cat">分类</label>
               <select id="f-cat" value={cat} onChange={(e) => setCat(e.target.value)}>
                 {TOPICS.map((t) => (
                   <option key={t.k} value={t.k}>

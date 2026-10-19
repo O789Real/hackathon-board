@@ -66,7 +66,7 @@ export function Overview({ mine, custom, onOpenBoard, onAdd }: Props) {
       <div className="pagehead">
         <div>
           <h1>总览</h1>
-          <p>从来源，到话题，到具体这一场 · 点话题筛选，点来源收窄</p>
+          <p>从来源，到分类，到具体这一场 · 点分类筛选，点来源收窄</p>
         </div>
         <div className="right">
           <span className="pill">
@@ -126,12 +126,12 @@ export function Overview({ mine, custom, onOpenBoard, onAdd }: Props) {
 
       <div className="strip">
         <span>
-          来源 <b>{new Set(events.map((e) => e.h)).size}</b> · 话题 <b>{new Set(events.map((e) => e.c)).size}</b> · 赛事{" "}
+          来源 <b>{new Set(events.map((e) => e.h)).size}</b> · 分类 <b>{new Set(events.map((e) => e.c)).size}</b> · 赛事{" "}
           <b>{events.length}</b>
         </span>
         <span className="r">
           <span>
-            话题 {TOPIC_LABEL.ai} 等 {new Set(events.map((e) => e.c)).size} 类 · 关注 {want} · 已核对 {checked}
+            分类 {TOPIC_LABEL.ai} 等 {new Set(events.map((e) => e.c)).size} 类 · 关注 {want} · 已核对 {checked}
           </span>
           <span>·</span>
           <span>Devpost 自动抓取，日期以官网为准</span>

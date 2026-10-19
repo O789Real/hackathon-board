@@ -955,7 +955,7 @@ export function NewsRiverFlow({
           <span className="river-instrument">03 /</span>
           <span className="river-indicator" />
           <h2>赛事流</h2>
-          <span className="river-heading-note">从来源，到话题，到这一场</span>
+          <span className="river-heading-note">从来源，到分类，到这一场</span>
         </div>
         <a
           href="#board"
@@ -1050,21 +1050,21 @@ export function NewsRiverFlow({
         {/* 中栏：话题 (Topics) */}
         <div className="river-topics" data-expanded={topicsExpanded}>
           <div className="river-column-heading">
-            <span>话题</span>
+            <span>分类</span>
             <button
               className="river-mobile-toggle"
               aria-expanded={topicsExpanded}
               onClick={() => setTopicsExpanded(!topicsExpanded)}
             >
-              {topicsExpanded ? "收起话题" : "展开全部话题"}
+              {topicsExpanded ? "收起分类" : "展开全部分类"}
             </button>
           </div>
 
           {topicsExpanded && (
             <input
               type="search"
-              aria-label="查找话题"
-              placeholder="查找话题"
+              aria-label="查找分类"
+              placeholder="查找分类"
               value={topicQuery}
               onChange={(e) => setTopicQuery(e.target.value)}
               className="river-source-search"
@@ -1072,6 +1072,16 @@ export function NewsRiverFlow({
           )}
 
           <div className="river-topic-list">
+            <button
+              key="__all"
+              aria-pressed={!selectedTopic}
+              data-selected={!selectedTopic}
+              className="is-all"
+              onClick={() => setSelectedTopic(null)}
+            >
+              <i aria-hidden="true" />
+              <span>全部</span>
+            </button>
             {sortedTopics.map((topic) => {
               const cat =
                 TOPIC_CATEGORY_MAP[topic.slug] ??
@@ -1157,9 +1167,7 @@ export function NewsRiverFlow({
                 key={card.id}
                 data-river-card={card.id}
                 className={idx === 0 && !isFiltering ? "is-current" : ""}
-                data-revealed={
-                  isFiltering || forceReveal || (idx === 0 ? arrived : true)
-                }
+                data-revealed={true}
               >
                 {/* 骨架屏光效（粒子尚未到达前显示） */}
                 <span className="river-card-placeholder" aria-hidden="true">

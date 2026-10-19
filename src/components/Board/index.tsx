@@ -56,7 +56,7 @@ export function Board({ events, mine, setMine, filters, setFilters, onAdd }: Pro
 
       <div className="fbar">
         <div className="fgroup">
-          <span className="fl">话题</span>
+          <span className="fl">分类</span>
           <span style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
             <button className="chip" aria-pressed={filters.cat === "all"} onClick={() => setFilters({ cat: "all" })}>
               全部<em>{events.length}</em>
@@ -170,7 +170,7 @@ export function Board({ events, mine, setMine, filters, setFilters, onAdd }: Pro
                           <dd>{ev.h || "—"}</dd>
                         </div>
                         <div>
-                          <dt>话题</dt>
+                          <dt>分类</dt>
                           <dd>{labelOf(ev.c)}</dd>
                         </div>
                         <div>
@@ -278,7 +278,7 @@ export function Board({ events, mine, setMine, filters, setFilters, onAdd }: Pro
       {list.length === 0 ? (
         <div className="empty">
           <b>没有匹配的赛事</b>
-          <p>换个话题，或者点右上「收录」把你自己的比赛加进来。</p>
+          <p>换个分类，或者点右上「收录」把你自己的比赛加进来。</p>
         </div>
       ) : null}
 
