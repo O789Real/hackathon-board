@@ -31,5 +31,17 @@ export const SEED: EventRec[] = [
   {"i": "c4", "n": "中国高校计算机大赛 C4", "h": "教育部教指委", "u": "https://www.c4best.cn", "c": "other", "f": "混合", "cy": "每年", "t": ["团体"], "d": "下设大数据、人工智能、移动应用等多个分赛道。"},
   {"i": "mlh", "n": "MLH 赛季", "h": "Major League Hacking", "u": "https://mlh.io/events", "c": "other", "f": "混合", "cy": "全年多场", "t": ["学生", "赛历"], "d": "北美为主的官方学生黑客松联盟，赛历公开可订阅。"},
   {"i": "devpost", "n": "Devpost", "h": "Devpost", "u": "https://devpost.com/hackathons", "c": "other", "f": "线上", "cy": "全年滚动", "t": ["场次最多"], "d": "全球最大的黑客松聚合平台，常年几百场在线赛同时开放。"},
-  {"i": "hackerearth", "n": "HackerEarth", "h": "HackerEarth", "u": "https://www.hackerearth.com/challenges/", "c": "other", "f": "线上", "cy": "全年滚动", "t": ["企业赛"], "d": "大量企业赞助赛，部分带内推与招聘通道。"}
+  {"i": "hackerearth", "n": "HackerEarth", "h": "HackerEarth", "u": "https://www.hackerearth.com/challenges/", "c": "other", "f": "线上", "cy": "全年滚动", "t": ["企业赛"], "d": "大量企业赞助赛，部分带内推与招聘通道。"},
+  {"i": "itchjams", "n": "itch.io Game Jams", "h": "itch.io", "u": "https://itch.io/jams", "c": "game", "f": "线上", "cy": "全年滚动", "t": ["Game Jam", "赛历"], "d": "全球最大的 Game Jam 聚合页，任何时候都有几百场在招。本站的实时游戏赛事就来自这里。"},
+  {"i": "ludumdare", "n": "Ludum Dare", "h": "Ludum Dare", "u": "https://ldjam.com", "c": "game", "f": "线上", "cy": "每年 4 月与 10 月", "t": ["48/72小时"], "d": "历史最悠久的线上 Game Jam：个人 48 小时 Compo 或团队 72 小时 Jam，二选一。"},
+  {"i": "ggj", "n": "Global Game Jam 全球游戏创作节", "h": "Global Game Jam", "u": "https://globalgamejam.org", "c": "game", "f": "混合", "cy": "每年 1 月下旬", "t": ["48小时", "线下站点"], "d": "全球规模最大的 48 小时游戏极限开发，100 多个国家同步，中国区由 CiGA 组织。"},
+  {"i": "cigagj", "n": "CiGA Game Jam", "h": "CiGA 中国独立游戏联盟", "u": "https://www.ciga.me", "c": "game", "f": "混合", "cy": "每年夏季", "t": ["48小时", "华语圈最大"], "d": "华语圈最大的线下 Game Jam，十几个城市设站点，48 小时把创意做成游戏原型。"},
+  {"i": "booomjam", "n": "BOOOMJam 暴造", "h": "机核", "u": "https://www.gcores.com", "c": "game", "f": "线上", "cy": "每年 2 次 · 每期 21 天", "t": ["21天", "限主题"], "d": "机核办的限时限主题游戏创作挑战，21 天比 48 小时从容，成品完成度普遍更高，还有线下展出机会。"},
+  {"i": "taptaplight", "n": "TapTap 聚光灯 GameJam", "h": "TapTap", "u": "https://www.taptap.cn/game-jam/6", "c": "game", "f": "混合", "cy": "每年多场 · 21 天或 48 小时", "t": ["AI创作", "TapTap制造"], "d": "TapTap 主办，含 21 天创作挑战和制造新星系列，近届要求或鼓励用 TapTap 制造（自然语言 AI 做游戏）参赛，奖金池大。"},
+  {"i": "tencentgcc", "n": "腾讯游戏创作大赛", "h": "腾讯游戏学堂", "u": "https://gameinstitute.qq.com", "c": "game", "f": "线上", "cy": "每年春季开启报名", "t": ["AI游戏赛道"], "d": "腾讯办的老牌游戏创作大赛，近届专设 AI 游戏赛道并开放腾讯的 AI 工具给参赛者。"},
+  {"i": "neteaseminigame", "n": "网易高校 MINI-GAME 挑战赛", "h": "网易游戏学堂", "u": "https://www.taptap.cn/game-jam/minigame", "c": "game", "f": "线上", "cy": "每年", "t": ["高校", "小游戏"], "d": "面向高校学生的小游戏开发赛，初赛决赛在 TapTap 上评人气奖，门槛比商业赛低。"},
+  {"i": "vibejam", "n": "Vibe Jam", "h": "Pieter Levels", "u": "https://vibejam.com", "c": "game", "f": "线上", "cy": "每年春季", "t": ["AI编程", "浏览器游戏"], "d": "目前最大的 AI 做游戏比赛：要求绝大部分代码由 AI 写出，作品必须浏览器打开即玩，奖金数万美元。"},
+  {"i": "gamejamgg", "n": "gamejam.gg 赛历", "h": "gamejam.gg", "u": "https://gamejam.gg", "c": "game", "f": "线上", "cy": "全年滚动", "t": ["Game Jam", "赛历"], "d": "把全网 Game Jam 汇成一张日历的站，按截止时间排，找近期能参加的 Jam 时先看它。"},
+  {"i": "bilibili-ai-creator-s2", "n": "build in bilibili · AI 创造公开赛 第二赛季", "h": "哔哩哔哩", "u": "https://www.bilibili.com/opus/1262431200618741810", "c": "game", "f": "线上", "cy": "投稿自 2026-10-24 起持续进行", "t": ["AI创作", "视频投稿"], "d": "B站官方 AI 创造公开赛第二赛季：在 B 站投稿 AI 创造主题的原创视频稿件参赛，截止时间将提前 30 天另行公告。"},
+  {"i": "jimeng-ai-interactive", "n": "即梦AI 交互创新大赛", "h": "即梦AI", "u": "https://www.douyin.com/zhuanti/7435451956040091689", "c": "game", "f": "线上", "cy": "征稿 11月1日—12月1日", "t": ["AI", "交互"], "d": "即梦AI 交互创新大赛，征稿 11月1日—12月1日，最高奖 10 万元。年份为按发帖时间推断的 2026，海报文案未直接读到。"}
 ];
