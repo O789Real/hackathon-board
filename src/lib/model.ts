@@ -13,6 +13,7 @@ const CN_SEED_IDS = new Set([
   "lanqiao", "mcm", "ccsp", "paddle", "modelscope", "xfyun", "ciscn",
   "ncss", "tzb", "c4", "cigagj", "booomjam", "taptaplight", "tencentgcc",
   "neteaseminigame", "bilibili-ai-creator-s2", "jimeng-ai-interactive",
+  "bayhack-2026", "zhihu-hackathon-s3", "modelscope-ai-game-s3",
 ]);
 
 /**
