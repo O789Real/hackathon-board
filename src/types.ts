@@ -38,6 +38,9 @@ export interface Topic {
   c: string;
 }
 
+/** 区域：中国 / 非中国（海外·全球） */
+export type Region = "cn" | "intl";
+
 export type Track = "want" | "watch" | "drop";
 
 export interface Mine {
