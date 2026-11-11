@@ -36,9 +36,14 @@ export function upcoming(events: EventRec[], mine: MineMap, n: number): { ev: Ev
 }
 
 function hit(ev: EventRec, q: string, label: string): boolean {
-  if (!q) return true;
-  const hay = [ev.n, ev.h, ev.c, label, (ev.t ?? []).join(" "), ev.d ?? ""].join(" ").toLowerCase();
-  return hay.includes(q.toLowerCase());
+  const query = q.trim().toLowerCase();
+  if (!query) return true;
+  // 全字段：名称/主办/分类/标签/说明/地点/形式/赛期/常年节奏都可搜
+  const hay = [ev.n, ev.h, ev.c, label, (ev.t ?? []).join(" "), ev.d ?? "", ev.loc ?? "", ev.f, ev.dw ?? "", ev.cy ?? ""]
+    .join(" ")
+    .toLowerCase();
+  // 多个词用空格分隔 = 全部命中才算（AND），如「上海 游戏」「线上 ai」
+  return query.split(/\s+/).every((token) => hay.includes(token));
 }
 
 export function filterEvents(events: EventRec[], f: Filters, mine: MineMap, labelOf: (k: string) => string): EventRec[] {
