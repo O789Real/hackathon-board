@@ -1,10 +1,36 @@
 import { LIVE_EVENTS } from "../data/events";
 import { SEED } from "../data/seeds";
-import type { EventRec, Filters, MineMap } from "../types";
+import type { EventRec, Filters, MineMap, Region } from "../types";
 import { daysLeft, endOf } from "./time";
 
 export function allEvents(custom: EventRec[]): EventRec[] {
   return [...custom, ...LIVE_EVENTS, ...SEED];
+}
+
+/** 明确归中国区的常驻种子 id（主办方在中国；判定人定，不靠猜地点） */
+const CN_SEED_IDS = new Set([
+  "ospp", "tianchi", "datafountain", "kesci", "datacastle", "huaweicloud",
+  "lanqiao", "mcm", "ccsp", "paddle", "modelscope", "xfyun", "ciscn",
+  "ncss", "tzb", "c4", "cigagj", "booomjam", "taptaplight", "tencentgcc",
+  "neteaseminigame", "bilibili-ai-creator-s2", "jimeng-ai-interactive",
+]);
+
+/**
+ * 区域判定：中国 / 非中国。
+ * - 实时抓取（itch-* / dp*）是海外平台的赛事，一律归非中国区；
+ * - 巡逻收录（bilibili-* / jimeng-* 等社交来源 id）与手工常驻按 CN 名单归中国区；
+ * - 访客自己收录的（c_*）默认中国区，她收的多半是国内赛事。
+ * 想调整某个种子的归属：把 id 加进 / 移出 CN_SEED_IDS 即可。
+ */
+export function regionOf(ev: EventRec): Region {
+  if (ev.i.startsWith("itch-") || ev.i.startsWith("dp")) return "intl";
+  if (CN_SEED_IDS.has(ev.i)) return "cn";
+  if (ev.i.startsWith("c_")) return "cn";
+  return "intl";
+}
+
+export function regionLabel(r: Region): string {
+  return r === "cn" ? "中国" : "非中国";
 }
 
 export function deadlineOf(ev: EventRec, mine: MineMap): string | null {
