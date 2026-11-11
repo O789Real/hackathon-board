@@ -103,7 +103,8 @@ Playwright 用**系统 python**（`python`，不是 DSH 捆绑的那个，捆绑
 
 | 源 | 结论 |
 |---|---|
-| Devpost `/api/hackathons?page=N` | ✅ 200，JSON，这是唯一的主力源 |
+| Devpost `/api/hackathons?page=N` | ✅ 200，JSON，主力源 |
+| itch.io `/jams/in-progress` HTML | ✅ 200，服务端渲染可解析（标题/主办/截止时刻/参加人数）；质量闸门：参加 ≥80 且 365 天内截止，最多取 40 条，全部归 game 分类（2026-11-11 接入，第二个源） |
 | Devpost 比赛详情 / 作品 / 技术栈 | ❌ 全部 404 或 403（真浏览器也 403） |
 | 活动行 | ❌ 客户端渲染，无结构化数据；所谓 API 返回 404 页 |
 | SegmentFault 活动 | ❌ 超时 / 468 反爬 |
