@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOPICS, TOPIC_LABEL } from "./data/topics";
-import { allEvents, deadlineOf, regionOf } from "./lib/model";
-import { loadCustom, loadMine, loadRegion, makeBackup, saveCustom, saveMine, saveRegion } from "./lib/storage";
+import { allEvents, regionOf } from "./lib/model";
+import { loadCustom, loadRegion, makeBackup, saveCustom, saveRegion } from "./lib/storage";
 import { todayStr } from "./lib/time";
-import type { EventRec, Filters, MineMap, Region, ViewName } from "./types";
+import type { EventRec, Filters, Region, ViewName } from "./types";
 import { Overview } from "./components/Overview";
 import { Board } from "./components/Board";
 
@@ -12,10 +12,8 @@ const EMPTY_FILTERS: Filters = { q: "", cat: "all", form: "", only: "", host: ""
 export function App() {
   const [view, setView] = useState<ViewName>("over");
   const [region, setRegionState] = useState<Region>(() => loadRegion());
-  const [mine, setMineState] = useState<MineMap>(() => loadMine());
   const [custom, setCustomState] = useState<EventRec[]>(() => loadCustom());
   const [filters, setFiltersState] = useState<Filters>(EMPTY_FILTERS);
-  const [dialog, setDialog] = useState(false);
   const [toast, setToast] = useState("");
   const toastTimer = useRef<number | undefined>(undefined);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -26,7 +24,6 @@ export function App() {
     toastTimer.current = window.setTimeout(() => setToast(""), 2000);
   }, []);
 
-  useEffect(() => saveMine(mine), [mine]);
   useEffect(() => saveCustom(custom), [custom]);
   useEffect(() => saveRegion(region), [region]);
 
@@ -35,15 +32,12 @@ export function App() {
     setFiltersState(EMPTY_FILTERS);
   }, []);
 
-  const setMine = useCallback((updater: (prev: MineMap) => MineMap) => setMineState((p) => updater(p)), []);
   const setFilters = useCallback((patch: Partial<Filters>) => setFiltersState((p) => ({ ...p, ...patch })), []);
 
   const all = useMemo(() => allEvents(custom), [custom]);
   const events = useMemo(() => all.filter((e) => regionOf(e) === region), [all, region]);
   const cnCount = useMemo(() => all.filter((e) => regionOf(e) === "cn").length, [all]);
   const intlCount = all.length - cnCount;
-  const want = events.filter((e) => mine[e.i]?.track === "want").length;
-  const withDl = events.filter((e) => deadlineOf(e, mine)).length;
 
   const openBoardFromOverview = useCallback((sel?: { host?: string; topic?: string }) => {
     setFiltersState((p) => ({ ...p, cat: sel?.topic ?? "all", host: sel?.host ?? "", only: "", q: "" }));
@@ -51,7 +45,7 @@ export function App() {
   }, []);
 
   const doExport = () => {
-    const blob = new Blob([JSON.stringify(makeBackup(mine, custom), null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(makeBackup(custom), null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `赛道板-我的数据-${todayStr()}.json`;
@@ -64,8 +58,7 @@ export function App() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const data = JSON.parse(String(reader.result)) as { mine?: MineMap; custom?: EventRec[] };
-        if (data.mine) setMineState((p) => ({ ...p, ...data.mine }));
+        const data = JSON.parse(String(reader.result)) as { custom?: EventRec[] };
         if (Array.isArray(data.custom)) {
           setCustomState((prev) => {
             const ids = new Set(prev.map((c) => c.i));
@@ -121,51 +114,12 @@ export function App() {
                 {n.count !== null ? <em>{n.count}</em> : null}
               </a>
             ))}
-            <a
-              href="#board"
-              onClick={(e) => {
-                e.preventDefault();
-                setFilters({ only: "want" });
-                setView("board");
-              }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.3L12 17l-5.6 3 1.1-6.3L3 9.4l6.4-.8z" />
-              </svg>
-              我关注的<em>{want}</em>
-            </a>
-            <a
-              href="#board"
-              onClick={(e) => {
-                e.preventDefault();
-                setFilters({ only: "deadline" });
-                setView("board");
-              }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <circle cx="12" cy="13" r="8" />
-                <path d="M12 9v4l2.5 2M9 2h6" />
-              </svg>
-              已设截止<em>{withDl}</em>
-            </a>
           </nav>
         </div>
 
         <div className="navgrp">
           <h5>更多功能</h5>
           <nav className="nav">
-            <a
-              href="#add"
-              onClick={(e) => {
-                e.preventDefault();
-                setDialog(true);
-              }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              收录一条
-            </a>
             <a
               href="#export"
               onClick={(e) => {
@@ -196,8 +150,6 @@ export function App() {
         <div className="side-foot">
           <div className="stamp">
             收录 <b>{events.length}</b> · 在招 <b>{events.filter((e) => e.dl).length}</b>
-            <br />
-            关注 <b>{want}</b> · 已核对 <b>{events.filter((e) => mine[e.i]?.checked).length}</b>
           </div>
         </div>
       </aside>
@@ -222,37 +174,12 @@ export function App() {
 
         <section className="view">
           {view === "over" ? (
-            <Overview
-              mine={mine}
-              custom={custom}
-              region={region}
-              onOpenBoard={openBoardFromOverview}
-              onAdd={() => setDialog(true)}
-            />
+            <Overview custom={custom} region={region} onOpenBoard={openBoardFromOverview} />
           ) : (
-            <Board
-              events={events}
-              mine={mine}
-              setMine={setMine}
-              filters={filters}
-              setFilters={setFilters}
-              onAdd={() => setDialog(true)}
-            />
+            <Board events={events} filters={filters} setFilters={setFilters} />
           )}
         </section>
       </div>
-
-      {dialog ? (
-        <AddDialog
-          onClose={() => setDialog(false)}
-          onSubmit={(rec) => {
-            setCustomState((prev) => [rec, ...prev]);
-            setDialog(false);
-            setFilters({ cat: "all", only: "", q: "", host: "" });
-            say("已收录 · 记得去官网核对时间");
-          }}
-        />
-      ) : null}
 
       <input
         ref={fileRef}
@@ -267,98 +194,6 @@ export function App() {
       />
       <div className={`toast${toast ? " on" : ""}`}>{toast}</div>
     </div>
-  );
-}
-
-function AddDialog({ onClose, onSubmit }: { onClose: () => void; onSubmit: (rec: EventRec) => void }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const [name, setName] = useState("");
-  const [host, setHost] = useState("");
-  const [url, setUrl] = useState("");
-  const [cat, setCat] = useState(TOPICS[0].k);
-  const [form, setForm] = useState("线上");
-  const [desc, setDesc] = useState("");
-
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
-
-  return (
-    <dialog ref={ref} className="dlg" onCancel={onClose} onClose={onClose}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const n = name.trim();
-          if (!n) return;
-          onSubmit({
-            i: `c_${Date.now().toString(36)}`,
-            n,
-            h: host.trim() || "我自己收录",
-            u: url.trim(),
-            c: cat,
-            t: ["自定义"],
-            f: form,
-            cy: "待确认",
-            d: desc.trim(),
-          });
-        }}
-      >
-        <div className="dlg-h">
-          <h3>收录一条赛程</h3>
-          <button type="button" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="dlg-b">
-          <div className="field">
-            <label htmlFor="f-name">名称 *</label>
-            <input id="f-name" required maxLength={60} value={name} onChange={(e) => setName(e.target.value)} placeholder="例：某某杯 AI 挑战赛" />
-          </div>
-          <div className="two">
-            <div className="field">
-              <label htmlFor="f-host">主办方</label>
-              <input id="f-host" maxLength={40} value={host} onChange={(e) => setHost(e.target.value)} />
-            </div>
-            <div className="field">
-              <label htmlFor="f-url">官网链接</label>
-              <input id="f-url" type="url" maxLength={200} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" />
-            </div>
-          </div>
-          <div className="two">
-            <div className="field">
-              <label htmlFor="f-cat">分类</label>
-              <select id="f-cat" value={cat} onChange={(e) => setCat(e.target.value)}>
-                {TOPICS.map((t) => (
-                  <option key={t.k} value={t.k}>
-                    {t.l}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="f-form">形式</label>
-              <select id="f-form" value={form} onChange={(e) => setForm(e.target.value)}>
-                <option>线上</option>
-                <option>线下</option>
-                <option>混合</option>
-              </select>
-            </div>
-          </div>
-          <div className="field">
-            <label htmlFor="f-desc">一句话说明</label>
-            <textarea id="f-desc" rows={2} maxLength={200} value={desc} onChange={(e) => setDesc(e.target.value)} />
-          </div>
-        </div>
-        <div className="dlg-f">
-          <button type="button" className="btn" onClick={onClose}>
-            取消
-          </button>
-          <button type="submit" className="btn solid">
-            收录
-          </button>
-        </div>
-      </form>
-    </dialog>
   );
 }
 
