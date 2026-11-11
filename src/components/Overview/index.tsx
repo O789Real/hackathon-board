@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { TOPIC_LABEL } from "../../data/topics";
-import { allEvents, nextDeadline, upcoming } from "../../lib/model";
+import { allEvents, nextDeadline, regionLabel, regionOf, upcoming } from "../../lib/model";
 import { daysLeft, endOf, fmtDate } from "../../lib/time";
-import type { EventRec, MineMap } from "../../types";
+import type { EventRec, MineMap, Region } from "../../types";
 import { NewsRiverFlow } from "../NewsRiver/NewsRiverFlow";
 import { toOverviewData } from "../NewsRiver/adapter";
 
@@ -11,6 +11,7 @@ const DAY = 86_400_000;
 interface Props {
   mine: MineMap;
   custom: EventRec[];
+  region: Region;
   onOpenBoard: (sel?: { host?: string; topic?: string }) => void;
   onAdd: () => void;
 }
@@ -50,8 +51,11 @@ function Countdown({ ev, dl, manual }: { ev: EventRec; dl: string; manual: boole
   );
 }
 
-export function Overview({ mine, custom, onOpenBoard, onAdd }: Props) {
-  const events = useMemo(() => allEvents(custom), [custom]);
+export function Overview({ mine, custom, region, onOpenBoard, onAdd }: Props) {
+  const events = useMemo(
+    () => allEvents(custom).filter((e) => regionOf(e) === region),
+    [custom, region]
+  );
   const snapshot = useMemo(() => new Date().toISOString(), []);
   const data = useMemo(() => toOverviewData(events, snapshot), [events, snapshot]);
 
@@ -65,8 +69,8 @@ export function Overview({ mine, custom, onOpenBoard, onAdd }: Props) {
     <>
       <div className="pagehead">
         <div>
-          <h1>总览</h1>
-          <p>从来源，到分类，到具体这一场 · 点分类筛选，点来源收窄</p>
+          <h1>总览 · {regionLabel(region)}区</h1>
+          <p>从来源，到分类，到具体这一场 · 点分类筛选，点来源收窄 · 左上角可切换中国 / 非中国</p>
         </div>
         <div className="right">
           <span className="pill">
@@ -134,7 +138,7 @@ export function Overview({ mine, custom, onOpenBoard, onAdd }: Props) {
             分类 {TOPIC_LABEL.ai} 等 {new Set(events.map((e) => e.c)).size} 类 · 关注 {want} · 已核对 {checked}
           </span>
           <span>·</span>
-          <span>Devpost 自动抓取，日期以官网为准</span>
+          <span>{region === "cn" ? "国内赛事与社媒巡逻收录，日期以官网为准" : "Devpost + itch.io 自动抓取，日期以官网为准"}</span>
         </span>
       </div>
     </>
