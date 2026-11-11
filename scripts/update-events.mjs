@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 从 Devpost 公开接口抓在招黑客松，生成 src/data/events.ts
+ * 从 Devpost 公开接口 + itch.io Game Jam 列表页抓在招赛事，生成 src/data/events.ts
  *
  *   node scripts/update-events.mjs
  *
@@ -80,6 +80,57 @@ async function fetchPage(page) {
   return res.json();
 }
 
+// ---------- itch.io Game Jams（第二个数据源，全部归 game 分类） ----------
+// itch 的进行中列表页是服务端渲染 HTML，可解析出：标题 / 主办 / 提交截止时刻 / 参加人数。
+// 质量闸门：参加人数 >= 80 且截止日在 365 天内（滤掉常年挂着的玩笑 Jam 和冷门小 Jam）。
+
+function decodeEntities(s) {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .trim();
+}
+
+async function fetchItchJams(today) {
+  const res = await fetch("https://itch.io/jams/in-progress", {
+    headers: { "User-Agent": "Mozilla/5.0 Chrome/126", Accept: "text/html" },
+    signal: AbortSignal.timeout(25_000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+  const limit = new Date(new Date(`${today}T00:00:00Z`).getTime() + 365 * 86_400_000).toISOString().slice(0, 10);
+  const out = [];
+  for (const block of html.split('class="jam lazy_images"').slice(1)) {
+    const head = /<h3 dir="auto"><a href="(\/jam\/([a-z0-9\-]+))">([^<]+)<\/a>/.exec(block);
+    if (!head) continue;
+    const closes = /<span class="date_countdown">([^<]+)<\/span>/.exec(block)?.[1] ?? "";
+    const dl = closes.slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dl) || dl < today || dl > limit) continue;
+    const joined = /<span class="number">([\d,]+)<\/span>\s*joined/.exec(block)?.[1];
+    const rg = joined ? Number(joined.replace(/,/g, "")) : 0;
+    if (rg < 80) continue;
+    const host = /Hosted by <a [^>]*>([^<]+)<\/a>/.exec(block)?.[1] ?? "itch.io";
+    out.push({
+      i: `itch-${head[2]}`,
+      n: decodeEntities(head[3]),
+      h: decodeEntities(host),
+      u: `https://itch.io${head[1]}`,
+      c: "game",
+      f: "线上",
+      w: "不限",
+      dl,
+      dw: `提交截止 ${dl}`,
+      rg,
+      loc: "Online",
+      t: ["Game Jam", "itch.io"],
+    });
+  }
+  return out.sort((a, b) => (b.rg ?? 0) - (a.rg ?? 0)).slice(0, 40);
+}
+
 // 按上海时区算「今天」，不能用 UTC ——否则零点到八点之间会差一天
 const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Shanghai" });
 const byId = new Map();
@@ -114,6 +165,20 @@ for (let page = 1; page <= 13; page++) {
       t: (h.themes ?? []).map((x) => x.name).filter(Boolean).slice(0, 3),
     });
   }
+}
+
+// 合并 itch 源（抓不到时不影响 Devpost 主链路）
+try {
+  const jams = await fetchItchJams(today);
+  let added = 0;
+  for (const j of jams) {
+    if (byId.has(j.i)) continue;
+    byId.set(j.i, j);
+    added++;
+  }
+  console.log(`itch.io Game Jams：新增 ${added} 条`);
+} catch (err) {
+  console.warn(`itch.io 抓取失败（跳过）：${err.message}`);
 }
 
 const items = [...byId.values()].sort((a, b) => (a.dl < b.dl ? -1 : a.dl > b.dl ? 1 : a.n.localeCompare(b.n)));
