@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOPICS, TOPIC_LABEL } from "./data/topics";
-import { allEvents, deadlineOf } from "./lib/model";
-import { loadCustom, loadMine, makeBackup, saveCustom, saveMine } from "./lib/storage";
+import { allEvents, deadlineOf, regionOf } from "./lib/model";
+import { loadCustom, loadMine, loadRegion, makeBackup, saveCustom, saveMine, saveRegion } from "./lib/storage";
 import { todayStr } from "./lib/time";
-import type { EventRec, Filters, MineMap, ViewName } from "./types";
+import type { EventRec, Filters, MineMap, Region, ViewName } from "./types";
 import { Overview } from "./components/Overview";
 import { Board } from "./components/Board";
 
@@ -11,6 +11,7 @@ const EMPTY_FILTERS: Filters = { q: "", cat: "all", form: "", only: "", host: ""
 
 export function App() {
   const [view, setView] = useState<ViewName>("over");
+  const [region, setRegionState] = useState<Region>(() => loadRegion());
   const [mine, setMineState] = useState<MineMap>(() => loadMine());
   const [custom, setCustomState] = useState<EventRec[]>(() => loadCustom());
   const [filters, setFiltersState] = useState<Filters>(EMPTY_FILTERS);
@@ -27,11 +28,20 @@ export function App() {
 
   useEffect(() => saveMine(mine), [mine]);
   useEffect(() => saveCustom(custom), [custom]);
+  useEffect(() => saveRegion(region), [region]);
+
+  const setRegion = useCallback((r: Region) => {
+    setRegionState(r);
+    setFiltersState(EMPTY_FILTERS);
+  }, []);
 
   const setMine = useCallback((updater: (prev: MineMap) => MineMap) => setMineState((p) => updater(p)), []);
   const setFilters = useCallback((patch: Partial<Filters>) => setFiltersState((p) => ({ ...p, ...patch })), []);
 
-  const events = useMemo(() => allEvents(custom), [custom]);
+  const all = useMemo(() => allEvents(custom), [custom]);
+  const events = useMemo(() => all.filter((e) => regionOf(e) === region), [all, region]);
+  const cnCount = useMemo(() => all.filter((e) => regionOf(e) === "cn").length, [all]);
+  const intlCount = all.length - cnCount;
   const want = events.filter((e) => mine[e.i]?.track === "want").length;
   const withDl = events.filter((e) => deadlineOf(e, mine)).length;
 
@@ -82,9 +92,13 @@ export function App() {
           <i aria-hidden="true" />
           <b>赛道板</b>
         </div>
-        <div className="lang">
-          <button className="on">中文</button>
-          <button disabled title="暂未做">English</button>
+        <div className="lang" role="group" aria-label="区域">
+          <button className={region === "cn" ? "on" : ""} aria-pressed={region === "cn"} onClick={() => setRegion("cn")}>
+            中国区 {cnCount}
+          </button>
+          <button className={region === "intl" ? "on" : ""} aria-pressed={region === "intl"} onClick={() => setRegion("intl")}>
+            非中国区 {intlCount}
+          </button>
         </div>
 
         <div className="navgrp">
@@ -211,6 +225,7 @@ export function App() {
             <Overview
               mine={mine}
               custom={custom}
+              region={region}
               onOpenBoard={openBoardFromOverview}
               onAdd={() => setDialog(true)}
             />
