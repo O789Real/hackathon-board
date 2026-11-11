@@ -1,0 +1,11 @@
+{
+  "rules": [
+    "先读 AGENTS.md，里面是踩坑记录，比代码本身重要",
+    "改完必须跑：tsc --noEmit → vite build → Playwright 截图自查背景色/元素数量/控制台报错",
+    "禁止删除 index.html 里的 data-theme=\"dark\"，否则整站翻白",
+    "禁止手改 src/data/events.ts（自动生成）；国内赛事写进 src/data/seeds.ts",
+    "新增分类要在 NewsRiverFlow.tsx 的 TOPIC_CATEGORY_MAP 登记颜色",
+    "Windows 上不要用 PowerShell 批量改 HTML，用编辑工具或 python 精确替换",
+    "国内数据源已实测抓不到，不要重复尝试写爬虫"
+  ]
+}
