@@ -41,25 +41,13 @@ export interface Topic {
 /** 区域：中国 / 非中国（海外·全球） */
 export type Region = "cn" | "intl";
 
-export type Track = "want" | "watch" | "drop";
-
-export interface Mine {
-  track?: Track;
-  /** 核对日期 YYYY-MM-DD */
-  checked?: string;
-  /** 自定义截止日 YYYY-MM-DD */
-  deadline?: string;
-}
-
-export type MineMap = Record<string, Mine>;
-
 export type ViewName = "over" | "board";
 
 export interface Filters {
   q: string;
   cat: string;
   form: string;
-  only: "" | "want" | "checked" | "deadline";
+  only: "" | "deadline";
   host: string;
-  sort: "default" | "track" | "name";
+  sort: "default" | "name";
 }
