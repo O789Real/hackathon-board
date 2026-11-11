@@ -1,7 +1,8 @@
-import type { EventRec, MineMap } from "../types";
+import type { EventRec, MineMap, Region } from "../types";
 
 const KEY_MINE = "hb.mine.v3";
 const KEY_CUSTOM = "hb.custom.v3";
+const KEY_REGION = "hb.region.v1";
 
 export function loadJSON<T>(key: string, fallback: T): T {
   try {
@@ -25,6 +26,8 @@ export const loadMine = (): MineMap => loadJSON<MineMap>(KEY_MINE, {});
 export const saveMine = (m: MineMap): void => saveJSON(KEY_MINE, m);
 export const loadCustom = (): EventRec[] => loadJSON<EventRec[]>(KEY_CUSTOM, []);
 export const saveCustom = (c: EventRec[]): void => saveJSON(KEY_CUSTOM, c);
+export const loadRegion = (): Region => (loadJSON<string>(KEY_REGION, "cn") === "intl" ? "intl" : "cn");
+export const saveRegion = (r: Region): void => saveJSON(KEY_REGION, r);
 
 export interface Backup {
   version: number;
