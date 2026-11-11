@@ -1,0 +1,5 @@
+# Cloudflare Pages 配置（路线 B/C 共用）
+# 面板连 Git 时构建命令仍以面板填写为准：npm install && npm run build，输出目录 dist
+name = "hackathon-board"
+compatibility_date = "2025-06-01"
+pages_build_output_dir = "dist"
